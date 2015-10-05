@@ -28,6 +28,8 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
+        UserMailer.welcome_email(@user).deliver_later
+
         format.html { redirect_to @user, notice: 'User was successfully created.' }
         format.json { render :show, status: :created, location: @user }
       else
@@ -41,7 +43,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.update(params.require(:user).permit(:name, :phone, :password, :password_confirmation))
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -69,6 +71,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:name, :username, :email, :phone, :password, :password__confirmation, :password_hash, :password_salt)
+      params.require(:user).permit(:name, :username, :email, :phone, :password, :password_confirmation, :password_hash, :password_salt)
     end
 end
